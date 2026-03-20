@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aarva — Mobile Advertising, Reimagined</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #E0190E;
+    --red-dark: #A8110A;
+    --red-light: #FF3B2F;
+    --cream: #FAF6F0;
+    --charcoal: #1A1A1A;
+    --mid: #3D3D3D;
+    --muted: #888;
+    --border: rgba(224,25,14,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--red);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease;
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--red);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: all 0.25s ease;
+    opacity: 0.5;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.4rem 4rem;
+    background: rgba(250,246,240,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Calibri', 'DM Sans', sans-serif;
+    font-size: 1.7rem;
+    font-weight: 700;
+    color: var(--red);
+    letter-spacing: 0.04em;
+    text-decoration: none;
+  }
+  .logo span { color: var(--charcoal); }
+  nav ul {
+    display: flex; gap: 2.5rem; list-style: none;
+  }
+  nav a {
+    text-decoration: none;
+    color: var(--mid);
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  nav a:hover { color: var(--red); }
+  .nav-cta {
+    background: var(--red);
+    color: #fff !important;
+    padding: 0.6rem 1.4rem;
+    border-radius: 2px;
+  }
+  .nav-cta:hover { background: var(--red-dark); color: #fff !important; }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 8rem 4rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 80% at 80% 50%, rgba(224,25,14,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(224,25,14,0.04) 0%, transparent 60%);
+  }
+  .hero-grid-lines {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(224,25,14,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(224,25,14,0.04) 1px, transparent 1px);
+    background-size: 80px 80px;
+  }
+  .hero-left { position: relative; z-index: 2; }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: rgba(224,25,14,0.08);
+    border: 1px solid var(--border);
+    color: var(--red);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.4rem 1rem;
+    border-radius: 2px;
+    margin-bottom: 2rem;
+    opacity: 0;
+    animation: fadeUp 0.7s 0.2s forwards;
+  }
+  .hero-tag::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--red);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(1.4); }
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(4rem, 7vw, 7.5rem);
+    line-height: 0.92;
+    letter-spacing: 0.01em;
+    color: var(--charcoal);
+    opacity: 0;
+    animation: fadeUp 0.8s 0.35s forwards;
+  }
+  h1 em {
+    font-style: italic;
+    color: var(--red);
+    font-family: 'DM Serif Display', serif;
+  }
+  .hero-sub {
+    margin-top: 2rem;
+    font-size: 1.1rem;
+    line-height: 1.7;
+    color: var(--mid);
+    max-width: 480px;
+    font-weight: 300;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.5s forwards;
+  }
+  .hero-actions {
+    display: flex; align-items: center; gap: 1.5rem;
+    margin-top: 2.5rem;
+    opacity: 0;
+    animation: fadeUp 0.8s 0.65s forwards;
+  }
+  .btn-primary {
+    background: var(--red);
+    color: #fff;
+    padding: 1rem 2rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 2px;
+    cursor: none;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+    display: inline-block;
+  }
+  .btn-primary:hover { background: var(--red-dark); transform: translateY(-2px); }
+  .btn-ghost {
+    color: var(--charcoal);
+    font-size: 0.88rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 0.5rem;
+    transition: color 0.2s;
+  }
+  .btn-ghost:hover { color: var(--red); }
+  .btn-ghost svg { transition: transform 0.2s; }
+  .btn-ghost:hover svg { transform: translateX(4px); }
+
+  .hero-stats {
+    display: flex; gap: 3rem;
+    margin-top: 3.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--border);
+    opacity: 0;
+    animation: fadeUp 0.8s 0.8s forwards;
+  }
+  .stat-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.4rem;
+    color: var(--red);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-top: 0.3rem;
+  }
+
+  /* Hero Visual */
+  .hero-right {
+    position: relative; z-index: 2;
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0;
+    animation: fadeIn 1.2s 0.5s forwards;
+  }
+  .phone-mockup {
+    width: 280px;
+    background: var(--charcoal);
+    border-radius: 36px;
+    padding: 12px;
+    box-shadow:
+      0 40px 80px rgba(0,0,0,0.2),
+      0 0 0 1px rgba(255,255,255,0.05),
+      inset 0 0 0 1px rgba(255,255,255,0.08);
+    position: relative;
+  }
+  .phone-screen {
+    background: #111;
+    border-radius: 26px;
+    overflow: hidden;
+    aspect-ratio: 9/19;
+    position: relative;
+  }
+  .phone-notch {
+    width: 80px; height: 22px;
+    background: var(--charcoal);
+    border-radius: 0 0 14px 14px;
+    position: absolute;
+    top: 0; left: 50%; transform: translateX(-50%);
+    z-index: 5;
+  }
+  .phone-content {
+    padding: 2rem 1rem 1rem;
+    height: 100%;
+    display: flex; flex-direction: column; gap: 0.8rem;
+  }
+  .pc-header {
+    font-size: 0.55rem;
+    font-weight: 600;
+    color: var(--red);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-top: 1rem;
+  }
+  .pc-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    color: #fff;
+    line-height: 1;
+  }
+  .pc-map {
+    flex: 1;
+    background: linear-gradient(135deg, #1a2744 0%, #0f1a2e 100%);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    min-height: 120px;
+  }
+  .map-route {
+    position: absolute;
+    inset: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .map-route svg { width: 90%; opacity: 0.8; }
+  .pc-stat-row {
+    display: flex; gap: 0.5rem;
+  }
+  .pc-stat {
+    flex: 1;
+    background: rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 0.6rem;
+    text-align: center;
+  }
+  .pc-stat-n {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    color: var(--red-light);
+  }
+  .pc-stat-l {
+    font-size: 0.45rem;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .pc-qr-row {
+    display: flex; align-items: center; gap: 0.7rem;
+    background: rgba(255,255,255,0.04);
+    border-radius: 8px;
+    padding: 0.6rem;
+  }
+  .pc-qr {
+    width: 36px; height: 36px;
+    background: #fff;
+    border-radius: 4px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 2px;
+    padding: 4px;
+  }
+  .pc-qr-cell { background: #111; border-radius: 1px; }
+  .pc-qr-cell.w { background: transparent; }
+  .pc-qr-text { font-size: 0.45rem; color: rgba(255,255,255,0.5); }
+  .pc-qr-scan { font-size: 0.5rem; font-weight: 600; color: var(--red-light); }
+
+  /* floating elements around phone */
+  .float-card {
+    position: absolute;
+    background: #fff;
+    border-radius: 12px;
+    padding: 0.8rem 1rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    font-size: 0.75rem;
+    animation: float 6s ease-in-out infinite;
+  }
+  .float-card-1 {
+    top: 15%; left: -20%;
+    animation-delay: 0s;
+  }
+  .float-card-2 {
+    bottom: 25%; right: -18%;
+    animation-delay: 2s;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  .fc-label { color: var(--muted); font-size: 0.65rem; margin-bottom: 0.2rem; }
+  .fc-value { font-weight: 700; color: var(--charcoal); }
+  .fc-value span { color: var(--red); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* HOW IT WORKS */
+  .section {
+    padding: 6rem 4rem;
+  }
+  .section-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    line-height: 0.95;
+    color: var(--charcoal);
+  }
+  .section-title em {
+    font-style: italic;
+    color: var(--red);
+    font-family: 'DM Serif Display', serif;
+  }
+
+  .how-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 4rem;
+    border: 2px solid var(--charcoal);
+  }
+  .how-card {
+    padding: 2.5rem;
+    border-right: 2px solid var(--charcoal);
+    position: relative;
+    background: var(--cream);
+    transition: background 0.3s;
+  }
+  .how-card:last-child { border-right: none; }
+  .how-card:hover { background: var(--charcoal); }
+  .how-card:hover .how-num,
+  .how-card:hover .how-title,
+  .how-card:hover .how-desc { color: #fff; }
+  .how-card:hover .how-icon { border-color: rgba(255,255,255,0.2); background: rgba(224,25,14,0.15); }
+  .how-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 5rem;
+    line-height: 1;
+    color: rgba(0,0,0,0.06);
+    position: absolute;
+    top: 1rem; right: 1.5rem;
+    transition: color 0.3s;
+  }
+  .how-icon {
+    width: 52px; height: 52px;
+    border: 1.5px solid var(--border);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.5rem;
+    background: rgba(224,25,14,0.05);
+    transition: all 0.3s;
+  }
+  .how-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.4rem;
+    color: var(--charcoal);
+    margin-bottom: 0.8rem;
+    transition: color 0.3s;
+  }
+  .how-desc {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.7;
+    font-weight: 300;
+    transition: color 0.3s;
+  }
+
+  /* FEATURES */
+  .features-section {
+    padding: 6rem 4rem;
+    background: var(--charcoal);
+    position: relative;
+    overflow: hidden;
+  }
+  .features-section::before {
+    content: 'AARVA';
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20rem;
+    color: rgba(255,255,255,0.02);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .features-section .section-title { color: #fff; }
+  .features-section .section-label { color: var(--red-light); }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5px;
+    margin-top: 4rem;
+    background: rgba(255,255,255,0.06);
+  }
+  .feat-card {
+    background: var(--charcoal);
+    padding: 2.5rem;
+    border: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+  .feat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--red);
+    transform: scaleX(0);
+    transition: transform 0.3s;
+    transform-origin: left;
+  }
+  .feat-card:hover { background: #222; }
+  .feat-card:hover::after { transform: scaleX(1); }
+  .feat-icon-wrap {
+    width: 44px; height: 44px;
+    background: rgba(224,25,14,0.12);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 1.2rem;
+  }
+  .feat-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.25rem;
+    color: #fff;
+    margin-bottom: 0.6rem;
+  }
+  .feat-desc {
+    font-size: 0.88rem;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* PRICING */
+  .pricing-section {
+    padding: 6rem 4rem;
+  }
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 4rem;
+  }
+  .price-card {
+    border: 1.5px solid rgba(0,0,0,0.08);
+    border-radius: 4px;
+    padding: 2.5rem;
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .price-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(224,25,14,0.08);
+  }
+  .price-card.featured {
+    background: var(--red);
+    border-color: var(--red);
+    color: #fff;
+  }
+  .price-badge {
+    position: absolute;
+    top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--charcoal);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.3rem 1rem;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+  .price-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .price-card.featured .price-name { color: rgba(255,255,255,0.7); }
+  .price-amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3.5rem;
+    line-height: 1;
+    color: var(--charcoal);
+  }
+  .price-card.featured .price-amount { color: #fff; }
+  .price-period {
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+  .price-card.featured .price-period { color: rgba(255,255,255,0.6); }
+  .price-features {
+    list-style: none;
+    display: flex; flex-direction: column; gap: 0.8rem;
+    margin-bottom: 2rem;
+  }
+  .price-features li {
+    font-size: 0.88rem;
+    color: var(--mid);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .price-card.featured .price-features li { color: rgba(255,255,255,0.85); }
+  .price-features li::before {
+    content: '✓';
+    color: var(--red);
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+  .price-card.featured .price-features li::before { color: rgba(255,255,255,0.9); }
+  .btn-outline {
+    display: block;
+    text-align: center;
+    padding: 0.9rem;
+    border: 1.5px solid var(--charcoal);
+    border-radius: 2px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--charcoal);
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { background: var(--charcoal); color: #fff; }
+  .price-card.featured .btn-outline {
+    background: #fff;
+    color: var(--red);
+    border-color: #fff;
+  }
+  .price-card.featured .btn-outline:hover {
+    background: rgba(255,255,255,0.9);
+  }
+
+  /* TESTIMONIALS */
+  .test-section {
+    padding: 6rem 4rem;
+    background: #F5F0E8;
+  }
+  .test-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 4rem;
+  }
+  .test-card {
+    background: #fff;
+    border-radius: 4px;
+    padding: 2rem;
+    position: relative;
+  }
+  .test-quote {
+    font-family: 'DM Serif Display', serif;
+    font-size: 3rem;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+  .test-text {
+    font-size: 0.92rem;
+    color: var(--mid);
+    line-height: 1.7;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+    font-family: 'DM Serif Display', serif;
+  }
+  .test-name {
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--charcoal);
+  }
+  .test-role {
+    font-size: 0.78rem;
+    color: var(--muted);
+  }
+  .test-stars {
+    display: flex; gap: 2px; margin-bottom: 1rem;
+    color: var(--red);
+    font-size: 0.85rem;
+  }
+
+  /* CTA STRIP */
+  .cta-strip {
+    background: var(--red);
+    padding: 5rem 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-strip::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 40px,
+      rgba(255,255,255,0.03) 40px,
+      rgba(255,255,255,0.03) 41px
+    );
+  }
+  .cta-strip h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    color: #fff;
+    line-height: 0.95;
+    position: relative;
+  }
+  .cta-strip p {
+    color: rgba(255,255,255,0.7);
+    font-size: 1rem;
+    margin-top: 0.8rem;
+    font-weight: 300;
+    position: relative;
+  }
+  .cta-strip .btn-white {
+    background: #fff;
+    color: var(--red);
+    padding: 1.1rem 2.4rem;
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    border-radius: 2px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.2s, background 0.2s;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .cta-strip .btn-white:hover {
+    transform: translateY(-3px);
+    background: var(--cream);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--charcoal);
+    padding: 4rem 4rem 2rem;
+  }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 3rem;
+    padding-bottom: 3rem;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+  }
+  .footer-logo {
+    font-family: 'Calibri', 'DM Sans', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--red);
+  }
+  .footer-tagline {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.88rem;
+    line-height: 1.7;
+    margin-top: 0.8rem;
+    font-weight: 300;
+  }
+  .footer-col h4 {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 1.2rem;
+  }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+  .footer-col a {
+    color: rgba(255,255,255,0.6);
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--red-light); }
+  .footer-bottom {
+    display: flex; justify-content: space-between; align-items: center;
+    padding-top: 1.5rem;
+  }
+  .footer-bottom p {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.3);
+  }
+  .footer-cities {
+    display: flex; gap: 1rem;
+  }
+  .footer-cities span {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.25);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* SCROLL INDICATOR */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 2rem; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+    opacity: 0;
+    animation: fadeIn 1s 1.5s forwards;
+  }
+  .scroll-indicator span {
+    font-size: 0.65rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--red), transparent);
+    animation: scrollDown 2s ease-in-out infinite;
+  }
+  @keyframes scrollDown {
+    0% { transform: scaleY(0); transform-origin: top; }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform: scaleY(1); transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  /* Intersection Observer Animations */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    nav ul { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; }
+    .hero-right { display: none; }
+    .section, .features-section, .pricing-section, .test-section { padding: 4rem 1.5rem; }
+    .how-grid, .features-grid, .pricing-grid, .test-grid { grid-template-columns: 1fr; }
+    .how-card { border-right: none; border-bottom: 2px solid var(--charcoal); }
+    .how-card:last-child { border-bottom: none; }
+    .cta-strip { flex-direction: column; padding: 3rem 1.5rem; text-align: center; }
+    .footer-top { grid-template-columns: 1fr 1fr; }
+    footer { padding: 3rem 1.5rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo">AARVA</a>
+  <ul>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#drivers">For Drivers</a></li>
+    <li><a href="#contact" class="nav-cta">Start Free</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid-lines"></div>
+
+  <div class="hero-left">
+    <div class="hero-tag">🚗 Mobile OOH Advertising Platform</div>
+    <h1>YOUR AD,<br><em>Moving</em><br>THROUGH<br>THE CITY</h1>
+    <p class="hero-sub">Aarva puts your brand on ride-hailing vehicles operating through routes <em>you</em> choose — with QR codes that turn every glance into a measurable customer action.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Launch Your Campaign</a>
+      <a href="#how" class="btn-ghost">
+        See how it works
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div>
+        <div class="stat-val">₹3,500</div>
+        <div class="stat-label">Per vehicle/month</div>
+      </div>
+      <div>
+        <div class="stat-val">1K+</div>
+        <div class="stat-label">Vehicles Year 1</div>
+      </div>
+      <div>
+        <div class="stat-val">100%</div>
+        <div class="stat-label">Measurable ROI</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="float-card float-card-1">
+      <div class="fc-label">QR Scans Today</div>
+      <div class="fc-value"><span>↑ 43%</span> &nbsp;128 scans</div>
+    </div>
+
+    <div class="phone-mockup">
+      <div class="phone-screen">
+        <div class="phone-notch"></div>
+        <div class="phone-content">
+          <div class="pc-header">Campaign Live</div>
+          <div class="pc-title">CHAI<br>POINT</div>
+          <div class="pc-map">
+            <div class="map-route">
+              <svg viewBox="0 0 220 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <!-- Grid -->
+                <line x1="0" y1="30" x2="220" y2="30" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                <line x1="0" y1="60" x2="220" y2="60" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                <line x1="0" y1="90" x2="220" y2="90" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                <line x1="55" y1="0" x2="55" y2="120" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                <line x1="110" y1="0" x2="110" y2="120" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                <line x1="165" y1="0" x2="165" y2="120" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                <!-- Route -->
+                <path d="M20 90 L60 90 L60 50 L120 50 L120 30 L180 30 L200 50" stroke="#E0190E" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <!-- Dots -->
+                <circle cx="20" cy="90" r="4" fill="#E0190E"/>
+                <circle cx="200" cy="50" r="4" fill="#FF3B2F"/>
+                <circle cx="120" cy="50" r="3" fill="rgba(224,25,14,0.5)"/>
+                <circle cx="60" cy="90" r="2.5" fill="rgba(224,25,14,0.4)"/>
+                <!-- Car icon -->
+                <rect x="108" y="44" width="14" height="8" rx="2" fill="#fff" opacity="0.9"/>
+                <circle cx="111" cy="53" r="1.5" fill="#ccc"/>
+                <circle cx="119" cy="53" r="1.5" fill="#ccc"/>
+              </svg>
+            </div>
+          </div>
+          <div class="pc-stat-row">
+            <div class="pc-stat">
+              <div class="pc-stat-n">12</div>
+              <div class="pc-stat-l">Vehicles</div>
+            </div>
+            <div class="pc-stat">
+              <div class="pc-stat-n">847</div>
+              <div class="pc-stat-l">Scans</div>
+            </div>
+            <div class="pc-stat">
+              <div class="pc-stat-n">₹4.2K</div>
+              <div class="pc-stat-l">Spent</div>
+            </div>
+          </div>
+          <div class="pc-qr-row">
+            <div class="pc-qr">
+              <div class="pc-qr-cell"></div><div class="pc-qr-cell"></div><div class="pc-qr-cell"></div><div class="pc-qr-cell"></div><div class="pc-qr-cell"></div>
+              <div class="pc-qr-cell"></div><div class="pc-qr-cell w"></div><div class="pc-qr-cell w"></div><div class="pc-qr-cell w"></div><div class="pc-qr-cell"></div>
+              <div class="pc-qr-cell"></div><div class="pc-qr-cell w"></div><div class="pc-qr-cell"></div><div class="pc-qr-cell w"></div><div class="pc-qr-cell"></div>
+              <div class="pc-qr-cell"></div><div class="pc-qr-cell w"></div><div class="pc-qr-cell w"></div><div class="pc-qr-cell w"></div><div class="pc-qr-cell"></div>
+              <div class="pc-qr-cell"></div><div class="pc-qr-cell"></div><div class="pc-qr-cell"></div><div class="pc-qr-cell"></div><div class="pc-qr-cell"></div>
+            </div>
+            <div>
+              <div class="pc-qr-text">Dynamic QR Code</div>
+              <div class="pc-qr-scan">↑ 43% scan rate</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="float-card float-card-2">
+      <div class="fc-label">Driver Earnings</div>
+      <div class="fc-value"><span>+₹1,925</span> this month</div>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span>Scroll</span>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <div class="section-label reveal">The Process</div>
+  <div class="section-title reveal">HOW<br><em>Aarva</em> WORKS</div>
+
+  <div class="how-grid reveal">
+    <div class="how-card">
+      <div class="how-num">01</div>
+      <div class="how-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E0190E" stroke-width="1.8">
+          <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 13h4"/>
+        </svg>
+      </div>
+      <div class="how-title">Create Your Campaign</div>
+      <div class="how-desc">Set your budget, upload your creative, and choose the city routes where your target customers are. No agency needed — launch in minutes.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">02</div>
+      <div class="how-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E0190E" stroke-width="1.8">
+          <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+        </svg>
+      </div>
+      <div class="how-title">Vehicles Hit The Road</div>
+      <div class="how-desc">Matched ride-hailing drivers in your chosen routes display your branded ad. Every trip becomes an impression for your business.</div>
+    </div>
+    <div class="how-card">
+      <div class="how-num">03</div>
+      <div class="how-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E0190E" stroke-width="1.8">
+          <path d="M3 3h18v18H3z" rx="2"/><path d="M9 9h2v2H9zM13 9h2v2h-2zM9 13h2v2H9z"/>
+        </svg>
+      </div>
+      <div class="how-title">Customers Scan & Convert</div>
+      <div class="how-desc">Your dynamic QR code drives traffic to offers, menus, or landing pages. Track every scan, click, and conversion in real-time.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div class="section-label reveal">Platform Features</div>
+  <div class="section-title reveal">BUILT FOR<br><em>Small</em> BUSINESSES,<br>NOT AGENCIES</div>
+
+  <div class="features-grid reveal">
+    <div class="feat-card">
+      <div class="feat-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF3B2F" stroke-width="1.8">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/><circle cx="12" cy="9" r="2.5"/>
+        </svg>
+      </div>
+      <div class="feat-title">Hyperlocal Route Targeting</div>
+      <div class="feat-desc">Select specific streets, neighbourhoods, or zones where your customers live and work. No wasted spend on irrelevant areas.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF3B2F" stroke-width="1.8">
+          <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
+        </svg>
+      </div>
+      <div class="feat-title">Self-Serve Dashboard</div>
+      <div class="feat-desc">Launch, pause, and manage campaigns entirely on your own. Real-time analytics show QR scans, reach, and ROI — no middlemen.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF3B2F" stroke-width="1.8">
+          <rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="3" width="8" height="8" rx="1"/><rect x="3" y="13" width="8" height="8" rx="1"/><circle cx="17" cy="17" r="3"/>
+        </svg>
+      </div>
+      <div class="feat-title">Dynamic QR Codes</div>
+      <div class="feat-desc">Link QR codes to any destination — discount offers, menus, booking pages. Update destinations anytime without reprinting.</div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FF3B2F" stroke-width="1.8">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <div class="feat-title">Real-Time Analytics</div>
+      <div class="feat-desc">Know exactly how your campaign is performing: impressions, scan rates, click-throughs, and conversions. All in one live dashboard.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div class="section-label reveal">Simple Pricing</div>
+  <div class="section-title reveal">NO HIDDEN FEES,<br>NO <em>Agency</em> TAX</div>
+
+  <div class="pricing-grid reveal">
+    <div class="price-card">
+      <div class="price-name">Starter</div>
+      <div class="price-amount">₹3,500</div>
+      <div class="price-period">per vehicle / month</div>
+      <ul class="price-features">
+        <li>1–3 vehicles</li>
+        <li>1 city route</li>
+        <li>Static QR code</li>
+        <li>Weekly analytics</li>
+        <li>Email support</li>
+      </ul>
+      <a href="#contact" class="btn-outline">Get Started</a>
+    </div>
+
+    <div class="price-card featured">
+      <div class="price-badge">Most Popular</div>
+      <div class="price-name">Growth</div>
+      <div class="price-amount">₹2,900</div>
+      <div class="price-period">per vehicle / month (5+ vehicles)</div>
+      <ul class="price-features">
+        <li>5–20 vehicles</li>
+        <li>Multi-route targeting</li>
+        <li>Dynamic QR codes</li>
+        <li>Real-time analytics</li>
+        <li>Priority support</li>
+      </ul>
+      <a href="#contact" class="btn-outline">Launch Campaign</a>
+    </div>
+
+    <div class="price-card">
+      <div class="price-name">Scale</div>
+      <div class="price-amount">Custom</div>
+      <div class="price-period">20+ vehicles</div>
+      <ul class="price-features">
+        <li>Unlimited vehicles</li>
+        <li>City-wide targeting</li>
+        <li>A/B test creatives</li>
+        <li>Dedicated manager</li>
+        <li>API access</li>
+      </ul>
+      <a href="#contact" class="btn-outline">Talk to Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="test-section">
+  <div class="section-label reveal">Social Proof</div>
+  <div class="section-title reveal">BUSINESSES<br><em>Loving</em> AARVA</div>
+
+  <div class="test-grid reveal">
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-quote">"</div>
+      <div class="test-text">Within 3 weeks of running our Aarva campaign in Bandra, we saw a 40% jump in new customers mentioning our poster. Best ₹3,500 we've spent.</div>
+      <div class="test-name">Priya Menon</div>
+      <div class="test-role">Owner, The Chai Collective, Mumbai</div>
+    </div>
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-quote">"</div>
+      <div class="test-text">I earn an extra ₹1,900/month just by having a sticker on my car. Aarva handles everything — I just drive my usual routes.</div>
+      <div class="test-name">Rajan Kumar</div>
+      <div class="test-role">Ola Driver Partner, Bengaluru</div>
+    </div>
+    <div class="test-card">
+      <div class="test-stars">★★★★★</div>
+      <div class="test-quote">"</div>
+      <div class="test-text">We tried Google Ads and got lost. Aarva was set up in 20 minutes, and the QR code drove 200+ bookings in the first month.</div>
+      <div class="test-name">Arjun Sharma</div>
+      <div class="test-role">Founder, Studio Glow Salon, Pune</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-strip" id="contact">
+  <div>
+    <h2>READY TO PUT<br>YOUR BRAND IN<br>MOTION?</h2>
+    <p>Join 200+ SMEs already growing with Aarva. First campaign free for 7 days.</p>
+  </div>
+  <a href="mailto:hello@aarva.in" class="btn-white">Start Free Trial →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">AARVA</div>
+      <div class="footer-tagline">India's first route-targeted mobile advertising platform built exclusively for small businesses. Turn city traffic into your marketing team.</div>
+    </div>
+    <div class="footer-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="#">For SMEs</a></li>
+        <li><a href="#drivers">For Drivers</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#pricing">Pricing</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Aarva</a></li>
+        <li><a href="#">Blog</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <ul>
+        <li><a href="mailto:hello@aarva.in">hello@aarva.in</a></li>
+        <li><a href="#">WhatsApp Us</a></li>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Aarva Technologies Pvt. Ltd. All rights reserved.</p>
+    <div class="footer-cities">
+      <span>Mumbai</span>
+      <span>·</span>
+      <span>Bengaluru</span>
+      <span>·</span>
+      <span>Pune</span>
+      <span>·</span>
+      <span>Delhi</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Custom cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.transform = `translate(${mx - 6}px, ${my - 6}px)`;
+    rx += (mx - rx) * 0.12;
+    ry += (my - ry) * 0.12;
+    ring.style.transform = `translate(${rx - 18}px, ${ry - 18}px)`;
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform += ' scale(1.8)'; ring.style.opacity = '0.8'; });
+    el.addEventListener('mouseleave', () => { ring.style.opacity = '0.5'; });
+  });
+
+  // Intersection Observer
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+      if (e.isIntersecting) {
+        setTimeout(() => e.target.classList.add('visible'), i * 80);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Smooth scroll for nav
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const target = document.querySelector(a.getAttribute('href'));
+      if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+    });
+  });
+
+  // Counter animation
+  function animateCounters() {
+    document.querySelectorAll('.stat-val').forEach(el => {
+      const text = el.textContent;
+      const num = parseFloat(text.replace(/[^0-9.]/g, ''));
+      if (isNaN(num)) return;
+      let start = 0; const duration = 1500;
+      const step = timestamp => {
+        if (!start) start = timestamp;
+        const progress = Math.min((timestamp - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - progress, 3);
+        el.textContent = text.replace(/[0-9.]+/, (num * ease).toFixed(num % 1 !== 0 ? 1 : 0));
+        if (progress < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    });
+  }
+  const heroObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) { animateCounters(); heroObs.disconnect(); }
+  }, { threshold: 0.5 });
+  heroObs.observe(document.querySelector('.hero-stats'));
+</script>
+</body>
+</html>
